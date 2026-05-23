@@ -16,6 +16,10 @@ from app.utils.invoice import generate_invoice_number
 
 from app.enums.invoice_status import InvoiceStatus
 
+from app.utils.pdf import generate_invoice_pdf
+
+from app.repositories.invoice_repository import get_invoice_by_id
+
 
 def create_new_invoice(db: Session, user_id: int, payload):
 
@@ -62,3 +66,15 @@ def create_new_invoice(db: Session, user_id: int, payload):
 def list_invoices(db: Session, user_id: int):
 
     return get_invoices(db, user_id)
+
+
+def generate_invoice_pdf_service(db: Session, invoice_id: int, user_id: int):
+
+    invoice = get_invoice_by_id(db, invoice_id, user_id)
+
+    if not invoice:
+        raise Exception("Invoice not found")
+
+    pdf = generate_invoice_pdf(invoice)
+
+    return pdf

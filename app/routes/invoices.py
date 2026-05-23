@@ -1,5 +1,7 @@
 from fastapi import APIRouter, Depends
 
+from fastapi.responses import Response
+
 from sqlalchemy.orm import Session
 
 from app.db.session import get_db
@@ -11,6 +13,8 @@ from app.core.dependencies import get_current_user
 from app.schemas.invoice import InvoiceCreate, InvoiceResponse
 
 from app.services.invoice_service import create_new_invoice, list_invoices
+
+from app.services.invoice_service import generate_invoice_pdf_service
 
 router = APIRouter(prefix="/invoices", tags=["Invoices"])
 
@@ -31,3 +35,19 @@ def get_all(
 ):
 
     return list_invoices(db, current_user.id)
+
+
+@router.get("/{invoice_id}/pdf")
+def download_pdf(
+    invoice_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+
+    pdf = generate_invoice_pdf_service(db, invoice_id, current_user.id)
+
+    return Response(
+        content=pdf,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f"inline; filename=invoice-{invoice_id}.pdf"},
+    )
