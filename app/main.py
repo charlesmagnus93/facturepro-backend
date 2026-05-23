@@ -6,11 +6,14 @@ from app.routes.users import router as users_router
 
 from app.routes.clients import router as clients_router
 
+from app.routes.invoices import router as invoices_router
+
 app = FastAPI(title="FacturePro API")
 
 app.include_router(auth_router)
 app.include_router(users_router)
 app.include_router(clients_router)
+app.include_router(invoices_router)
 
 
 @app.get("/")
