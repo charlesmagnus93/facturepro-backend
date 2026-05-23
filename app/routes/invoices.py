@@ -10,11 +10,14 @@ from app.models.user import User
 
 from app.core.dependencies import get_current_user
 
-from app.schemas.invoice import InvoiceCreate, InvoiceResponse
+from app.schemas.invoice import InvoiceCreate, InvoiceResponse, InvoicePayment
 
-from app.services.invoice_service import create_new_invoice, list_invoices
-
-from app.services.invoice_service import generate_invoice_pdf_service
+from app.services.invoice_service import (
+    create_new_invoice,
+    list_invoices,
+    generate_invoice_pdf_service,
+    register_invoice_payment,
+)
 
 router = APIRouter(prefix="/invoices", tags=["Invoices"])
 
@@ -51,3 +54,22 @@ def download_pdf(
         media_type="application/pdf",
         headers={"Content-Disposition": f"inline; filename=invoice-{invoice_id}.pdf"},
     )
+
+
+@router.post("/{invoice_id}/pay")
+def pay_invoice(
+    invoice_id: int,
+    payload: InvoicePayment,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+
+    invoice = register_invoice_payment(
+        db=db, invoice_id=invoice_id, user_id=current_user.id, amount=payload.amount
+    )
+
+    return {
+        "message": "Payment registered",
+        "invoice_status": invoice.status,
+        "amount_paid": invoice.amount_paid,
+    }

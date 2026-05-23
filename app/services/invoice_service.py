@@ -1,5 +1,7 @@
 from sqlalchemy.orm import Session
 
+from datetime import datetime
+
 from app.models.invoice import Invoice
 from app.models.invoice_item import InvoiceItem
 
@@ -7,6 +9,7 @@ from app.repositories.invoice_repository import (
     create_invoice,
     create_invoice_item,
     get_invoices,
+    update_invoice,
 )
 
 from app.repositories.client_repository import get_client_by_id
@@ -78,3 +81,27 @@ def generate_invoice_pdf_service(db: Session, invoice_id: int, user_id: int):
     pdf = generate_invoice_pdf(invoice)
 
     return pdf
+
+
+def register_invoice_payment(db: Session, invoice_id: int, user_id: int, amount: float):
+
+    invoice = get_invoice_by_id(db, invoice_id, user_id)
+
+    if not invoice:
+        raise Exception("Invoice not found")
+
+    invoice.amount_paid += amount
+
+    if invoice.amount_paid >= invoice.total_amount:
+
+        invoice.status = InvoiceStatus.PAID
+
+        invoice.paid_at = datetime.utcnow()
+
+    elif invoice.amount_paid > 0:
+
+        invoice.status = InvoiceStatus.PARTIALLY_PAID
+
+    update_invoice(db, invoice)
+
+    return invoice
