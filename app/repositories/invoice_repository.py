@@ -25,3 +25,12 @@ def create_invoice_item(db: Session, item: InvoiceItem):
 def get_invoices(db: Session, user_id: int):
 
     return db.query(Invoice).filter(Invoice.user_id == user_id).all()
+
+
+def get_invoice_by_id(db: Session, invoice_id: int, user_id: int):
+
+    return (
+        db.query(Invoice)
+        .filter(Invoice.id == invoice_id, Invoice.user_id == user_id)
+        .first()
+    )
