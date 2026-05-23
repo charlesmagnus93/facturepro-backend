@@ -1,6 +1,15 @@
 from datetime import datetime
 
-from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey, Enum
+from sqlalchemy import (
+    Column,
+    Integer,
+    String,
+    Float,
+    DateTime,
+    ForeignKey,
+    Enum,
+    Numeric,
+)
 
 from sqlalchemy.orm import relationship
 
@@ -25,6 +34,10 @@ class Invoice(Base):
     client_id = Column(Integer, ForeignKey("clients.id"), nullable=False)
 
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+
+    amount_paid = Column(Float, default=0)
+
+    paid_at = Column(DateTime, nullable=True)
 
     client = relationship("Client")
 
