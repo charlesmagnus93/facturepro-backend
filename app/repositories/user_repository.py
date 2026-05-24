@@ -28,11 +28,3 @@ def create_user(
     db.refresh(user)
 
     return user
-
-
-def update_invoice(db: Session, invoice):
-
-    db.commit()
-    db.refresh(invoice)
-
-    return invoice
