@@ -34,3 +34,11 @@ def get_invoice_by_id(db: Session, invoice_id: int, user_id: int):
         .filter(Invoice.id == invoice_id, Invoice.user_id == user_id)
         .first()
     )
+
+
+def update_invoice(db: Session, invoice):
+
+    db.commit()
+    db.refresh(invoice)
+
+    return invoice

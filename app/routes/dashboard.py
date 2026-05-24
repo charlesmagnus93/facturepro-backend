@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 
 from sqlalchemy.orm import Session
 
-from sqlalchemy import func
+from sqlalchemy import func, extract
 
 from app.db.session import get_db
 
@@ -44,10 +44,18 @@ def dashboard(
 
     unpaid = total_invoiced - total_paid
 
+    monthly_revenue = (
+        db.query(extract("month", Invoice.created_at), func.sum(Invoice.amount_paid))
+        .filter(Invoice.user_id == current_user.id)
+        .group_by(extract("month", Invoice.created_at))
+        .all()
+    )
+
     return {
         "clients": clients_count,
         "invoices": invoices_count,
         "total_invoiced": total_invoiced,
         "total_paid": total_paid,
         "unpaid": unpaid,
+        "monthly_revenue": monthly_revenue
     }
