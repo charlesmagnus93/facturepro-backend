@@ -1,8 +1,8 @@
-"""add invoice status enum
+"""postgres
 
-Revision ID: bc4ee2106be2
+Revision ID: 80e1c127ce32
 Revises: 
-Create Date: 2026-05-23 22:19:45.231221
+Create Date: 2026-05-25 11:15:27.348016
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'bc4ee2106be2'
+revision: str = '80e1c127ce32'
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -47,10 +47,12 @@ def upgrade() -> None:
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('invoice_number', sa.String(), nullable=False),
     sa.Column('total_amount', sa.Float(), nullable=True),
-    sa.Column('status', sa.Enum('PENDING', 'PAID', 'CANCELLED', 'OVERDUE', name='invoicestatus'), nullable=False),
+    sa.Column('status', sa.Enum('PENDING', 'PARTIALLY_PAID', 'PAID', 'CANCELLED', 'OVERDUE', name='invoicestatus'), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=True),
     sa.Column('client_id', sa.Integer(), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.Column('amount_paid', sa.Float(), nullable=True),
+    sa.Column('paid_at', sa.DateTime(), nullable=True),
     sa.ForeignKeyConstraint(['client_id'], ['clients.id'], ),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id'),

@@ -32,7 +32,7 @@ def create_new_invoice(db: Session, user_id: int, payload):
         raise Exception("Client not found")
 
     invoice = Invoice(
-        invoice_number=generate_invoice_number(),
+        invoice_number=generate_invoice_number(db, user_id),
         user_id=user_id,
         client_id=payload.client_id,
         status=InvoiceStatus.PENDING,

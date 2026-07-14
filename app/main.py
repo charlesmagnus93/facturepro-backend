@@ -2,6 +2,8 @@ from fastapi import FastAPI
 
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.config.settings import settings
+
 from app.routes.auth import router as auth_router
 
 from app.routes.users import router as users_router
@@ -16,7 +18,7 @@ app = FastAPI(title="FacturePro API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=settings.cors_origins_list,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

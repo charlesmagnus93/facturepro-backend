@@ -32,9 +32,12 @@ def register(payload: UserCreate, db: Session = Depends(get_db)):
 
 
 @router.post("/login", response_model=Token)
-def login(payload: UserLogin, db: Session = Depends(get_db)):
+# def login(payload: UserLogin, db: Session = Depends(get_db)):
+def login(
+    form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
+):
 
-    token = authenticate_user(db=db, phone=payload.phone, password=payload.password)
+    token = authenticate_user(db=db, phone=form_data.username, password=form_data.password)
 
     if not token:
         raise HTTPException(
