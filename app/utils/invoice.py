@@ -1,3 +1,5 @@
+from datetime import date
+
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 
@@ -10,4 +12,5 @@ def generate_invoice_number(db: Session, user_id: int) -> str:
     ).scalar() or 0
 
     next_number = count + 1
-    return f"FAC-{next_number:05d}"
+    today = date.today().strftime("%Y%m%d")
+    return f"FAC-{today}-{next_number:04d}"

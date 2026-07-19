@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from app.models.invoice import Invoice
 from app.models.invoice_item import InvoiceItem
@@ -31,6 +31,7 @@ def get_invoice_by_id(db: Session, invoice_id: int, user_id: int):
 
     return (
         db.query(Invoice)
+        .options(joinedload(Invoice.client), joinedload(Invoice.owner), joinedload(Invoice.items))
         .filter(Invoice.id == invoice_id, Invoice.user_id == user_id)
         .first()
     )

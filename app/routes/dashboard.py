@@ -44,12 +44,14 @@ def dashboard(
 
     unpaid = total_invoiced - total_paid
 
-    monthly_revenue = (
+    monthly_revenue_rows = (
         db.query(extract("month", Invoice.created_at), func.sum(Invoice.amount_paid))
         .filter(Invoice.user_id == current_user.id)
         .group_by(extract("month", Invoice.created_at))
         .all()
     )
+
+    monthly_revenue = [[int(month), float(total or 0)] for month, total in monthly_revenue_rows]
 
     return {
         "clients": clients_count,
@@ -57,5 +59,5 @@ def dashboard(
         "total_invoiced": total_invoiced,
         "total_paid": total_paid,
         "unpaid": unpaid,
-        "monthly_revenue": monthly_revenue
+        "monthly_revenue": monthly_revenue,
     }
